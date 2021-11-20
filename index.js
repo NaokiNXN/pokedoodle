@@ -51,9 +51,13 @@ client.Tags = client.sequelize.define('tags', {
         type: Sequelize.TEXT,
         allowNull: false
     },
-    type: {
+    type1: {
         type: Sequelize.STRING,
         allowNull: false,
+    },
+    type2: {
+        type: Sequelize.STRING,
+        defaultValue: null,
     },
     height: {
         type: Sequelize.FLOAT,
