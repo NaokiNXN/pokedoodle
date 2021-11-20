@@ -25,18 +25,18 @@ client.cooldowns = new Set();
 
 
 /**
- * This section creates a relational DB using serialize and sqlite
- * we then attach it to the client for easy access elsewhere.
+ * This section creates a DB using sequelize and sqlite, we also setup
+ * the data model to be used in the DB and both are attached to the client for easy access.
  */
 
-const sequelize = new Sequelize('database', 'user', 'password', {
+client.sequelize = new Sequelize('database', 'user', 'password', {
     host: 'localhost',
     dialect: 'sqlite',
-    logging: false,
+    logging: true,
     storage: 'database.sqlite',
 });
 
-const Tags = sequelize.define('tags', {
+client.Tags = client.sequelize.define('tags', {
     name: {
         type: Sequelize.STRING,
         unique: true,
@@ -87,7 +87,7 @@ const Tags = sequelize.define('tags', {
         type: Sequelize.INTEGER,
         defaultValue: 0,
     },
-})
+});
 
 
 /**

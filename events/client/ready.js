@@ -7,14 +7,19 @@
 
 
 module.exports = (client) => {
-    console.log('Setting Status');
     try {
-        await client.user.setPresence({
-            activities: [{ name: "Pokedoodle Bot use / to see commands!" }],
-            status: 'online'
-        });
+        console.log('Setting Status');
+        (async () => {
+            await client.user.setPresence({
+                activities: [{ name: "Pokedoodle Bot use / to see commands!" }],
+                status: 'online'
+            }).then(console.log('Status set!'));
+        })();
+
+        client.Tags.sync();
+
+        console.log('Pokedoodle is online');
     } catch (error) {
         console.log(error);
     }
-    console.log('Pokedoodle is online');
 }
