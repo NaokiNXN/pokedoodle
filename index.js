@@ -38,6 +38,11 @@ client.sequelize = new Sequelize('database', 'user', 'password', {
 });
 
 client.Tags = client.sequelize.define('tags', {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
     name: {
         type: Sequelize.STRING,
         unique: true,

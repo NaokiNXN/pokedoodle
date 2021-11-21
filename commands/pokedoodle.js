@@ -26,9 +26,7 @@ module.exports = {
 
             const pokemonName = interaction.options.getString('name').toLowerCase();
             const pokemon = await interaction.client.Tags.findOne({ where: { name: pokemonName } });
-
-            let data = ['Test Data:'];
-            let attachment;
+            
             if (pokemon && !pokemon.get('doodle')) {
                 data.push(`name: ${pokemon.get('name')}`);
                 data.push(`dex number: ${pokemon.get('dexNumber')}`);
