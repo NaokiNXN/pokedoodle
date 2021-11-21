@@ -95,7 +95,7 @@ module.exports = {
      */
     async execute(interaction) {
         console.log('Starting register command');
-        interaction.deferReply({ ephemeral: true });
+        interaction.deferReply();
         
         try {
             const newPokemon = await interaction.client.Tags.create({

@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction } = require('discord.js');
+const { Interaction, MessageAttachment } = require('discord.js');
+const Jimp = require('jimp');
 
 
 /**
@@ -8,7 +9,7 @@ const { Interaction } = require('discord.js');
  */
 
 module.exports = {
-    admin: true,
+    admin: false,
     data: new SlashCommandBuilder()
         .setName('pokedoodle')
         .setDescription('Used to search for a doodle in the DB')
@@ -21,13 +22,14 @@ module.exports = {
      */
     async execute(interaction) {
         try {
-            interaction.deferReply({ ephemeral: true });
+            interaction.deferReply();
 
             const pokemonName = interaction.options.getString('name').toLowerCase();
             const pokemon = await interaction.client.Tags.findOne({ where: { name: pokemonName } });
 
             let data = ['Test Data:'];
-            if (pokemon) {
+            let attachment;
+            if (pokemon && !pokemon.get('doodle')) {
                 data.push(`name: ${pokemon.get('name')}`);
                 data.push(`dex number: ${pokemon.get('dexNumber')}`);
                 data.push(`dex entry: ${pokemon.get('dexEntry')}`);
@@ -41,8 +43,11 @@ module.exports = {
                 data.push(`specialDef: ${pokemon.get('specialDef')}`);
                 data.push(`speed: ${pokemon.get('speed')}`);
                 return interaction.followUp(data.join('\n'));
+            } else if (pokemon && pokemon.get('doodle')) {
+                const doodle = new MessageAttachment(pokemon.get('doodle'), `${pokemonName}.png`);
+                const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
+                return interaction.followUp({content: `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle] });
             }
-
             return interaction.followUp('No pokemon found in the DB');
         } catch (error) {
             return console.log(error);

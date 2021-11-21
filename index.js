@@ -92,6 +92,10 @@ client.Tags = client.sequelize.define('tags', {
         type: Sequelize.INTEGER,
         defaultValue: 0,
     },
+    doodle: {
+        type: Sequelize.STRING,
+        defaultValue: null,
+    },
 });
 
 

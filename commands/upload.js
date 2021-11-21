@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Interaction, Message } = require('discord.js');
-
+const Jimp = require('jimp');
 
 /**
  * Register command takes the pokemon stats as an 
@@ -34,9 +34,22 @@ module.exports = {
                         if (db) return db.get('name');
                     });
                     if (pokemon) {
-                        return message.reply(`${pokemon} pokedoodle has been uploaded!`);
+                        return Jimp.read(attachment.url).then(async (image) => {
+                            await image.getBufferAsync(Jimp.MIME_PNG).then(async(buffer) => {
+                                const update = await message.client.Tags.update({ doodle: buffer }, { where: { name: pokemon } });
+                                
+                                if (update > 0) {
+                                    return message.reply(`${pokemon} pokedoodle has been uploaded!`);
+                                }
+
+                                return message.reply(`Their was an error loading the image buffer into the DB please log this error with the bot author`);
+                            });
+                        }).catch(error => {
+                            console.log(`Error occured during image upload:\n${error}`);
+                            return message.reply('Their was an error whilst trying to get the attachment from discord, please try again and if the error persists please log this error with the bot author');
+                        });
                     }
-                    return message.reply(`${attachment.name} is not currently registered in the DB please use /register first!`);
+                    return message.reply(`${attachment.name.split('.')[0]} is not currently registered in the DB please use /register first!`);
                 })
                 .catch(collected => {
                     console.log(collected);
