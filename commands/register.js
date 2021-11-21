@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const wait = require('util').promisify(setTimeout);
-const { Interaction } = require('discord.js');
+const { Interaction, MessageActionRow, MessageButton } = require('discord.js');
 
 const types = [
     ['Normal', 'Vormal'],
@@ -96,7 +96,7 @@ module.exports = {
     async execute(interaction) {
         console.log('Starting register command');
         interaction.deferReply();
-        
+
         try {
             const newPokemon = await interaction.client.Tags.create({
                 name: interaction.options.getString('name').toLowerCase(),
@@ -115,11 +115,58 @@ module.exports = {
             });
 
             await wait(4000).then(interaction.followUp(`${newPokemon.name} has been added to the DB, use the /upload command next to add the pokedoodle image.`));
-    
+
 
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                return interaction.followUp('That pokemon already exists in the DB');
+                const row = new MessageActionRow()
+                    .addComponents(
+                        new MessageButton()
+                            .setCustomId('registerYes')
+                            .setLabel('Yes')
+                            .setStyle('SUCCESS'),
+                        new MessageButton()
+                            .setCustomId('registerNo')
+                            .setLabel('No')
+                            .setStyle('DANGER')
+                    );
+
+                interaction.client.pokemonUpdate = {
+                    name: interaction.options.getString('name').toLowerCase(),
+                    dexNumber: interaction.options.getInteger('dex_number'),
+                    dexEntry: interaction.options.getString('dex_entry'),
+                    type1: interaction.options.getString('type_1'),
+                    type2: interaction.options.getString('type_2'),
+                    height: interaction.options.getNumber('height'),
+                    weight: interaction.options.getNumber('weight'),
+                    hp: interaction.options.getInteger('hp'),
+                    atk: interaction.options.getInteger('atk'),
+                    def: interaction.options.getInteger('def'),
+                    specialAtk: interaction.options.getInteger('spatk'),
+                    specialDef: interaction.options.getInteger('spdef'),
+                    speed: interaction.options.getInteger('speed')
+                };
+
+                await interaction.followUp({ content: `${interaction.options.getString('name')} already exists in the DB if you would like to modify the stats using the new information provided please click yes, otherwise click no`, components: [row] });
+
+                const filter = i => (i.customId === 'registerYes' && i.user.id === interaction.user.id) || (i.customId === 'registerNo' && i.user.id === interaction.user.id);
+
+                const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, time: 60000 });
+
+                collector.on('collect', async i => {
+                    if (i.customId === 'registerNo') {
+                        return await i.update({ content: `DB update aborted!`, components: [] });
+                    } else if (i.customId === 'registerYes') {
+                        const pokemon = await i.client.Tags.findOne({ where: { name: i.client.pokemonUpdate.name } });
+                        pokemon.set(i.client.pokemonUpdate).save();
+                        return await i.update({ content: `The DB has been updated using the new data!`, components: [] })
+                    }
+                })
+
+                collector.on('end', async collected => {
+                    return await interaction.followUp('No input recieved, input buttons are now disabled, if you would like to use this command please re-run the /register command!');
+                });
+                return;
             }
             console.log(error);
             return interaction.followUp('Something went wrong with adding that pokemon, double check the details before you try again.');
