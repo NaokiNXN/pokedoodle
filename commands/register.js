@@ -164,6 +164,7 @@ module.exports = {
                 })
 
                 collector.on('end', async collected => {
+                    if (collected.size != 0) return;
                     return await interaction.followUp('No input recieved, input buttons are now disabled, if you would like to use this command please re-run the /register command!');
                 });
                 return;
