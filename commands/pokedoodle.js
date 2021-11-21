@@ -1,6 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Interaction } = require('discord.js');
-const { data } = require('./register');
 
 
 /**
@@ -22,8 +21,9 @@ module.exports = {
      */
     async execute(interaction) {
         try {
-            const pokemonName = interaction.options.getString('name').toLowerCase();
+            interaction.deferReply({ ephemeral: true });
 
+            const pokemonName = interaction.options.getString('name').toLowerCase();
             const pokemon = await interaction.client.Tags.findOne({ where: { name: pokemonName } });
 
             let data = ['Test Data:'];
@@ -40,10 +40,10 @@ module.exports = {
                 data.push(`specialAtk: ${pokemon.get('specialAtk')}`);
                 data.push(`specialDef: ${pokemon.get('specialDef')}`);
                 data.push(`speed: ${pokemon.get('speed')}`);
-                return interaction.reply(data.join('\n'));
+                return interaction.followUp(data.join('\n'));
             }
 
-            return interaction.reply('No pokemon found in the DB');
+            return interaction.followUp('No pokemon found in the DB');
         } catch (error) {
             return console.log(error);
         }

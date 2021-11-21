@@ -95,9 +95,8 @@ module.exports = {
      */
     async execute(interaction) {
         console.log('Starting register command');
-
-        interaction.reply('Please wait whilst we register this pokemon, once it is done i will send another message on this channel to let you know');
-
+        interaction.deferReply({ ephemeral: true });
+        
         try {
             const newPokemon = await interaction.client.Tags.create({
                 name: interaction.options.getString('name').toLowerCase(),
@@ -115,15 +114,15 @@ module.exports = {
                 speed: interaction.options.getInteger('speed')
             });
 
-            await wait(4000).then(interaction.channel.send(`${newPokemon.name} has been added to the DB`));
+            await wait(4000).then(interaction.followUp(`${newPokemon.name} has been added to the DB, use the /upload command next to add the pokedoodle image.`));
     
 
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                return interaction.channel.send('That pokemon already exists in the DB');
+                return interaction.followUp('That pokemon already exists in the DB');
             }
             console.log(error);
-            return interaction.channel.send('Something went wrong with adding a tag.');
+            return interaction.followUp('Something went wrong with adding that pokemon, double check the details before you try again.');
         }
     },
 };

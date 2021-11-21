@@ -7,7 +7,8 @@ const Sequelize = require('sequelize');
 
 const botIntents = new Discord.Intents();
 botIntents.add(
-    Discord.Intents.FLAGS.GUILDS
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES
 );
 
 const client = new Discord.Client({ intents: botIntents });
