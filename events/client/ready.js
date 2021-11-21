@@ -13,7 +13,8 @@ module.exports = (client) => {
             await client.user.setPresence({
                 activities: [{ name: "Pokedoodle Bot use / to see commands!" }],
                 status: 'online'
-            }).then(console.log('Status set!'));
+            });
+            console.log('Status set!');
         })();
 
         client.Tags.sync();

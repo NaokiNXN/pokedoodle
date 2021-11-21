@@ -38,23 +38,13 @@ module.exports = {
                 .setDescription('The pokemons name, if special form e.g. Allolan or Shiny include this in the name!')
                 .setRequired(true))
         .addIntegerOption(option =>
-            option.setName('dex number')
+            option.setName('dex_number')
                 .setDescription('The pokedex number corresponding to this pokemon')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('dex entry')
+            option.setName('dex_entry')
                 .setDescription('The pokedex entry for this pokemon!')
                 .setRequired(true))
-        .addStringOption(option =>
-            option.setName('type 1')
-                .setDescription('The first type for this pokemon! please note type 1 is required additional types are optional.')
-                .setRequired(true)
-                .addChoices(types))
-        .addStringOption(option =>
-            option.setName('type 2')
-                .setDescription('The second applicable type for the pokemon, this is optional')
-                .setRequired(false)
-                .addChoices(types))
         .addNumberOption(option =>
             option.setName('height')
                 .setDescription('The pokemons Height')
@@ -86,7 +76,18 @@ module.exports = {
         .addIntegerOption(option =>
             option.setName('speed')
                 .setDescription('The pokemons base speed stat')
-                .setRequired(true)),
+                .setRequired(true))
+        .addStringOption(option =>
+            option.setName('type_1')
+                .setDescription('The first type for this pokemon! please note type 1 is required additional types are optional.')
+                .setRequired(true)
+                .addChoices(types))
+        .addStringOption(option =>
+            option.setName('type_2')
+                .setDescription('The second applicable type for the pokemon, this is optional')
+                .setRequired(false)
+                .addChoices(types)),
+
 
     /**
      * 
@@ -95,18 +96,15 @@ module.exports = {
     async execute(interaction) {
         console.log('Starting register command');
 
-        interaction.reply({
-            content: 'Please wait whilst we register this pokemon, once it is done i will send another message on this channel to let you know',
-            ephemeral: true
-        });
+        interaction.reply('Please wait whilst we register this pokemon, once it is done i will send another message on this channel to let you know');
 
         try {
             const newPokemon = await interaction.client.Tags.create({
-                name: interaction.options.getString('name'),
-                dexNumber: interaction.options.getInteger('dex number'),
-                dexEntry: interaction.options.getString('dex entry'),
-                type1: interaction.options.getString('type 1'),
-                type2: interaction.options.getString('type 2'),
+                name: interaction.options.getString('name').toLowerCase(),
+                dexNumber: interaction.options.getInteger('dex_number'),
+                dexEntry: interaction.options.getString('dex_entry'),
+                type1: interaction.options.getString('type_1'),
+                type2: interaction.options.getString('type_2'),
                 height: interaction.options.getNumber('height'),
                 weight: interaction.options.getNumber('weight'),
                 hp: interaction.options.getInteger('hp'),
@@ -115,17 +113,17 @@ module.exports = {
                 specialAtk: interaction.options.getInteger('spatk'),
                 specialDef: interaction.options.getInteger('spdef'),
                 speed: interaction.options.getInteger('speed')
-            }).then(
-                await wait(4000).then(
-                    interaction.channel.send(`${newPokemon.name} has been added to the DB`))
-            );
+            });
+
+            await wait(4000).then(interaction.channel.send(`${newPokemon.name} has been added to the DB`));
+    
 
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                return interaction.reply('That pokemon already exists in the DB');
+                return interaction.channel.send('That pokemon already exists in the DB');
             }
             console.log(error);
-            return interaction.reply('Something went wrong with adding a tag.');
+            return interaction.channel.send('Something went wrong with adding a tag.');
         }
     },
 };

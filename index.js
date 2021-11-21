@@ -33,7 +33,7 @@ client.sequelize = new Sequelize('database', 'user', 'password', {
     host: 'localhost',
     dialect: 'sqlite',
     logging: true,
-    storage: 'database.sqlite',
+    storage: './database/database.sqlite',
 });
 
 client.Tags = client.sequelize.define('tags', {
