@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Interaction, MessageAttachment, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const Jimp = require('jimp');
 
 
 
@@ -11,8 +12,8 @@ const { Interaction, MessageAttachment, MessageActionRow, MessageSelectMenu } = 
 module.exports = {
     admin: false,
     data: new SlashCommandBuilder()
-        .setName('pokedoodle')
-        .setDescription('Used to search for a doodle in the DB, please use one search argument!')
+        .setName('pokedex')
+        .setDescription('Used to search for a pokemon in the DB, please use one search argument!')
         .addStringOption(option =>
             option.setName('name')
                 .setDescription('The pokemons exact name as registered'))
@@ -31,6 +32,21 @@ module.exports = {
                 return interaction.reply('Please supply either a name or dex number to search, do not give both!')
             }
             interaction.deferReply();
+
+
+            async function dexGenerator(pokemon) {
+                const dex = await Jimp.read('/usr/src/bot/commands/assets/dex.png');
+                const doodle = await Jimp.read(pokemon.get('doodle')).then(image => {
+                    return image.resize( 225, 225);
+                }).catch(err => {
+                    console.log(err);
+                    return interaction.followUp('An error has occured during dex generation doodle resize, please log this with the bot maker');
+                });
+
+                await dex.composite(doodle, 110, 130);
+
+                return dex;
+            }
 
 
             if (interaction.options.getString('name')) {
@@ -53,9 +69,15 @@ module.exports = {
                     data.push(`speed: ${pokemon.get('speed')}`);
                     return interaction.followUp(data.join('\n'));
                 } else if (pokemon && pokemon.get('doodle')) {
-                    const doodle = new MessageAttachment(pokemon.get('doodle'), `${pokemonName}.png`);
-                    const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
-                    return interaction.followUp({ content: `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle] });
+                    const dex = await dexGenerator(pokemon);
+                    await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
+                        const doodle = new MessageAttachment(buffer, `${pokemonName}.png`);
+                        return interaction.followUp({ files: [doodle] });
+                    }).catch(err => {
+                        console.log(err);
+                        return interaction.followUp('An error occured whilst generating and sending the attachment during a name based search, please log this with the bot maker');
+                    });
+                    return;
                 }
                 return interaction.followUp('No pokemon found in the DB');
             }
@@ -65,7 +87,7 @@ module.exports = {
                 for (const p of results) {
                     output.push({
                         label: `${p.get('name')}`,
-                        description: `Choose this to display this pokedoodle!`,
+                        description: `Choose this to display this dex entry!`,
                         value: `${p.get('name')}`,
                     });
                 }
@@ -77,7 +99,7 @@ module.exports = {
                     .addComponents(
                         new MessageSelectMenu()
                             .setCustomId('dexSearch')
-                            .setPlaceholder('Choose a pokemon from the list to see its doodle!')
+                            .setPlaceholder('Choose a pokemon from the list to see its dex entry!')
                             .addOptions(pokemon));
 
                 await interaction.followUp({ content: 'Multiple pokemon found with that dex number, please choose an option from the dropdown below, this will only be valid for the next 60 seconds!', components: [row] });
@@ -88,21 +110,33 @@ module.exports = {
 
                 collector.on('collect', async i => {
                     const pokemon = await i.client.Tags.findOne({ where: { name: i.values[0] } });
-                    const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
-                    const doodle = new MessageAttachment(pokemon.get('doodle'), `${name}.png`);
-                    return await i.update({ content: `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle], components: [] });
+                    const dex = await dexGenerator(pokemon);
+                    await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
+                        const doodle = new MessageAttachment(buffer, `${pokemon.get('name')}DEX.png`);
+                        return interaction.followUp({ files: [doodle] });
+                    }).catch(err => {
+                        console.log(err);
+                        return interaction.followUp('An error occured whilst generating and sending the attachment during a dex based search, please log this with the bot maker');
+                    });
+                    return;
                 });
 
                 collector.on('end', async collected => {
                     if (collected.size != 0) return;
-                    return await interaction.followUp('No input recieved, input buttons are now disabled, if you would like to use this command please re-run the /pokedoodle command!');
+                    return await interaction.followUp('No input recieved, input buttons are now disabled, if you would like to use this command please re-run the /pokedex command!');
                 });
                 return;
             } else if (pokemon.length === 1) {
                 const p = await interaction.client.Tags.findOne({ where: { name: pokemon[0].value } });
-                const name = p.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
-                const doodle = new MessageAttachment(p.get('doodle'), `${name}.png`);
-                return await interaction.followUp({ content: `#${p.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle], components: [] });
+                const dex = await dexGenerator(p);
+                await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
+                    const doodle = new MessageAttachment(buffer, `${p.get('name')}DEX.png`);
+                    return interaction.followUp({ files: [doodle] });
+                }).catch(err => {
+                    console.log(err);
+                    return interaction.followUp('An error occured whilst generating and sending the attachment during a dex based search, please log this with the bot maker');
+                });
+                return;
             }
             return interaction.followUp('No pokemon found in the DB');
 
