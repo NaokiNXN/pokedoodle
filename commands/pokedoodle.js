@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Interaction, MessageAttachment, MessageActionRow, MessageSelectMenu } = require('discord.js');
-const Jimp = require('jimp');
+
 
 
 /**
