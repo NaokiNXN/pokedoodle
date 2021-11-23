@@ -3,7 +3,7 @@ const wait = require('util').promisify(setTimeout);
 const { Interaction, MessageActionRow, MessageButton } = require('discord.js');
 
 const types = [
-    ['Normal', 'Vormal'],
+    ['Normal', 'Normal'],
     ['Fire', 'Fire'],
     ['Water', 'Water'],
     ['Grass', 'Grass'],

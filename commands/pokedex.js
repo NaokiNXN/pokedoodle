@@ -50,7 +50,7 @@ module.exports = {
                         dimensions: [230, 36],
                         stats: [280, 30],
                         name: [298, 128],
-                        dex: [312, 138]
+                        dex: [302, 138]
                     }
 
                     if (!pokemon.get('type2')) dataSpace.types = [dataSpace.types[0] * 2, dataSpace.types[1]];
@@ -103,20 +103,28 @@ module.exports = {
                         .print(font, 0, 0, dexNameText)
                         .contain(dataSpace.name[0], dataSpace.name[1]);
 
+                    const dexArray = pokemon.get('dexEntry').split(' ');
 
-                    const dexEntry = new Jimp(Jimp.measureText(font, pokemon.get('dexEntry')), Jimp.measureTextHeight(font, pokemon.get('dexEntry', 30)))
-                        .print(
-                            font,
-                            0,
-                            0,
-                            {
-                                text: pokemon.get('dexEntry'),
-                                alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-                                alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
-                            },
-                            40,
-                        )
-                        .contain(dataSpace.dex[0], dataSpace.dex[1]);
+                    let rawDexEntry = [];
+                    let dexEntry = [];
+
+                    dexArray.forEach((value, index) => {
+                        rawDexEntry.push(value);
+                        if(Jimp.measureText(font, rawDexEntry.map((x) => x).join(' ')) > 800) {
+                            dexEntry.push(rawDexEntry.join(' '));
+                            rawDexEntry = [];
+                        }
+                    });
+                    dexEntry.push(rawDexEntry.join(' '));
+
+                    let jimpedDex = [];
+                    dexEntry.forEach((value, index) => {
+                        jimpedDex.push(new Jimp(Jimp.measureText(font, value), Jimp.measureTextHeight(font, value))
+                            .print(font, 0, 0, value)
+                            .contain(dataSpace.dex[0], (dataSpace.dex[1]/dexEntry.length)))
+                    });
+                    
+                    
 
                     return {
                         types: [type1, type2],
@@ -124,7 +132,7 @@ module.exports = {
                         weight: Weight,
                         stats: [stats, dataSpace.stats[1]],
                         dexName: dexName,
-                        dexEntry: dexEntry
+                        dexEntry: [jimpedDex, dataSpace.dex[1]]
                     }
                 });
 
@@ -146,8 +154,15 @@ module.exports = {
 
                 await dex.composite(pokemonData.dexName, 512, 194);
 
-                await dex.composite(pokemonData.dexEntry, 200, 200);
-
+                const yIncrement = pokemonData.dexEntry[1]/pokemonData.dexEntry[0].length;
+                const startPos = [ 515, 592 ]
+                pokemonData.dexEntry[0].forEach(async ( value, index ) => {
+                    if (index === 0) {
+                        await dex.composite(value, startPos[0], startPos[1]);
+                    } else {
+                        await dex.composite(value, startPos[0], startPos[1] + (yIncrement*index));
+                    }
+                })
 
                 return dex;
             }
