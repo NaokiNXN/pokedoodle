@@ -37,13 +37,117 @@ module.exports = {
             async function dexGenerator(pokemon) {
                 const dex = await Jimp.read('/usr/src/bot/commands/assets/dex.png');
                 const doodle = await Jimp.read(pokemon.get('doodle')).then(image => {
-                    return image.resize( 225, 225);
+                    return image.resize(225, 225);
                 }).catch(err => {
                     console.log(err);
                     return interaction.followUp('An error has occured during dex generation doodle resize, please log this with the bot maker');
                 });
-
                 await dex.composite(doodle, 110, 130);
+
+                const pokemonData = await Jimp.loadFont('/usr/src/bot/commands/assets/pokemon_32.fnt').then(font => {
+                    let dataSpace = {
+                        types: [110, 60],
+                        dimensions: [230, 36],
+                        stats: [280, 30],
+                        name: [298, 128],
+                        dex: [312, 138]
+                    }
+
+                    if (!pokemon.get('type2')) dataSpace.types = [dataSpace.types[0] * 2, dataSpace.types[1]];
+
+                    const type1 = new Jimp(Jimp.measureText(font, pokemon.get('type1')), Jimp.measureTextHeight(font, pokemon.get('type1')))
+                        .print(font, 0, 0, pokemon.get('type1'))
+                        .contain(dataSpace.types[0], dataSpace.types[1]);
+
+
+
+                    const type2 = (() => {
+                        if (pokemon.get('type2')) {
+                            return new Jimp(Jimp.measureText(font, pokemon.get('type2')), Jimp.measureTextHeight(font, pokemon.get('type2')))
+                                .print(font, 0, 0, pokemon.get('type2'))
+                                .contain(dataSpace.types[0], dataSpace.types[1]);
+                        }
+                    })();
+
+
+                    const height = new Jimp(Jimp.measureText(font, `Height: ${pokemon.get('height')}m`), Jimp.measureTextHeight(font, `Height: ${pokemon.get('height')}m`))
+                        .print(font, 0, 0, `Height: ${pokemon.get('height')}m`)
+                        .contain(dataSpace.dimensions[0], dataSpace.dimensions[1]);
+
+                    const Weight = new Jimp(Jimp.measureText(font, `Weight: ${pokemon.get('weight')}kg`), Jimp.measureTextHeight(font, `Weight: ${pokemon.get('weight')}kg`))
+                        .print(font, 0, 0, `Weight: ${pokemon.get('weight')}kg`)
+                        .contain(dataSpace.dimensions[0], dataSpace.dimensions[1]);
+
+
+                    const statText = [
+                        'Base Stats',
+                        `HP - ${pokemon.get('hp')}`,
+                        `Atk - ${pokemon.get('atk')}`,
+                        `def - ${pokemon.get('def')}`,
+                        `SpA - ${pokemon.get('specialAtk')}`,
+                        `SpD - ${pokemon.get('specialDef')}`,
+                        `Spe - ${pokemon.get('speed')}`
+                    ];
+
+                    let stats = [];
+
+                    statText.forEach((value, index) => {
+                        stats.push(new Jimp(Jimp.measureText(font, value), Jimp.measureTextHeight(font, value))
+                            .print(font, 0, 0, value)
+                            .contain(dataSpace.stats[0], dataSpace.stats[1]))
+                    });
+
+                    const dexNameText = `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ')}`;
+
+                    const dexName = new Jimp(Jimp.measureText(font, dexNameText), Jimp.measureTextHeight(font, dexNameText))
+                        .print(font, 0, 0, dexNameText)
+                        .contain(dataSpace.name[0], dataSpace.name[1]);
+
+
+                    const dexEntry = new Jimp(Jimp.measureText(font, pokemon.get('dexEntry')), Jimp.measureTextHeight(font, pokemon.get('dexEntry', 30)))
+                        .print(
+                            font,
+                            0,
+                            0,
+                            {
+                                text: pokemon.get('dexEntry'),
+                                alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+                                alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+                            },
+                            40,
+                        )
+                        .contain(dataSpace.dex[0], dataSpace.dex[1]);
+
+                    return {
+                        types: [type1, type2],
+                        height: height,
+                        weight: Weight,
+                        stats: [stats, dataSpace.stats[1]],
+                        dexName: dexName,
+                        dexEntry: dexEntry
+                    }
+                });
+
+                if (pokemonData.types[1]) {
+                    await dex.composite(pokemonData.types[0], 120, 362);
+                    await dex.composite(pokemonData.types[1], 250, 362)
+                } else {
+                    await dex.composite(pokemonData.types[0], 110, 362);
+                }
+
+                await dex.composite(pokemonData.height, 110, 420);
+                await dex.composite(pokemonData.weight, 110, 456);
+
+                let heightCounter = -26;
+                for (const value of pokemonData.stats[0]) {
+                    heightCounter += 26;
+                    await dex.composite(value, 92, 500 + heightCounter);
+                }
+
+                await dex.composite(pokemonData.dexName, 512, 194);
+
+                await dex.composite(pokemonData.dexEntry, 200, 200);
+
 
                 return dex;
             }
