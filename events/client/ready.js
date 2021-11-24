@@ -17,10 +17,10 @@ module.exports = (client) => {
         let statusIndex = 0;
 
         client.globalInterval = setInterval(async () => {
-            const id = await client.Tags.findOne({
+            const id = await client.Tags.findAll({
                 order: [['id', 'DESC']],
             }).then(data => {
-                return data.get('id');
+                return data.length
             }).catch(err => {
                 console.log(err);
             });
