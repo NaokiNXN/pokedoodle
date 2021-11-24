@@ -32,7 +32,7 @@ module.exports = (client) => {
                 'Pokedoodle Bot!',
                 'Type / to see all commands!',
                 '/invite to add this bot to your own server',
-                `Their is currently: ${pokemon.dexNumber} pokemon recorded!`
+                `Their is currently: ${pokemon.dexNumber} pokemon recorded!`,
                 `Their are currently: ${pokemon.id} different poke-forms recorded!`
             ]
 
