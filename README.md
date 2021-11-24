@@ -57,3 +57,5 @@ However if you can see something that could be improved please feel free to cont
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
+I do not claim ownership over anything related to pokemon, simply made by a fan for fun.
