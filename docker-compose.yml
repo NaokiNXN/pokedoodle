@@ -3,11 +3,7 @@ services:
     pokedoodle:
         image: pokedoodle:latest
         restart: always
-        container_name: pokedoodleTESTBUILD
+        container_name: pokedoodle
         volumes:
             - /opt/pokedoodle:/usr/src/bot/database
           
-networks:
-    default:
-        external:
-            name: cloudbox
