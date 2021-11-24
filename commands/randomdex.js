@@ -114,7 +114,7 @@ module.exports = {
                     dexEntry.forEach((value, index) => {
                         jimpedDex.push(new Jimp(Jimp.measureText(font, value), Jimp.measureTextHeight(font, value))
                             .print(font, 0, 0, value)
-                            .contain(dataSpace.dex[0], (dataSpace.dex[1] / dexEntry.length)))
+                            .contain(dataSpace.dex[0], Math.floor((dataSpace.dex[1] / dexEntry.length))))
                     });
 
 
@@ -147,7 +147,7 @@ module.exports = {
 
                 await dex.composite(pokemonData.dexName, 512, 194);
 
-                const yIncrement = pokemonData.dexEntry[1] / pokemonData.dexEntry[0].length;
+                const yIncrement = Math.floor(pokemonData.dexEntry[1] / pokemonData.dexEntry[0].length);
                 const startPos = [515, 592]
                 pokemonData.dexEntry[0].forEach(async (value, index) => {
                     if (index === 0) {
