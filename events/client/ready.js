@@ -25,10 +25,19 @@ module.exports = (client) => {
                 console.log(err);
             });
 
-            const dexNumber = await client.Tags.findOne({
+
+            const dexNumber = await client.Tags.findAll({
                 order: [['dexNumber', 'DESC']],
             }).then(data => {
-                return data.get('dexNumber');
+                let count = 0;
+                let lastDex = 0;
+                for (const element of data) {
+                    if (element.get('dexNumber') != lastDex) {
+                        count += 1;
+                        lastDex = element.get('dexNumber');
+                    };
+                };
+                return count;
             }).catch(err => {
                 console.log(err);
             });

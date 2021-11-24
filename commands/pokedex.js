@@ -119,10 +119,17 @@ module.exports = {
 
                     let jimpedDex = [];
                     dexEntry.forEach((value, index) => {
+                        try {
                         jimpedDex.push(new Jimp(Jimp.measureText(font, value), Jimp.measureTextHeight(font, value))
                             .print(font, 0, 0, value)
                             .contain(dataSpace.dex[0], Math.floor((dataSpace.dex[1]/dexEntry.length))))
+                        } catch (err) {
+                            console.log(err)
+                            console.log(jimpedDex);
+                            console.log(dexEntry);
+                        }
                     });
+                    
                     
                     
 
