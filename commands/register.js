@@ -98,24 +98,67 @@ module.exports = {
         interaction.deferReply();
 
         try {
-            const newPokemon = await interaction.client.Tags.create({
-                name: interaction.options.getString('name').toLowerCase(),
-                dexNumber: interaction.options.getInteger('dex_number'),
-                dexEntry: interaction.options.getString('dex_entry'),
-                type1: interaction.options.getString('type_1'),
-                type2: interaction.options.getString('type_2'),
-                height: interaction.options.getNumber('height'),
-                weight: interaction.options.getNumber('weight'),
-                hp: interaction.options.getInteger('hp'),
-                atk: interaction.options.getInteger('atk'),
-                def: interaction.options.getInteger('def'),
-                specialAtk: interaction.options.getInteger('spatk'),
-                specialDef: interaction.options.getInteger('spdef'),
-                speed: interaction.options.getInteger('speed')
+            const row = new MessageActionRow()
+                .addComponents(
+                    new MessageButton()
+                        .setCustomId('registerYes')
+                        .setLabel('Yes')
+                        .setStyle('SUCCESS'),
+                    new MessageButton()
+                        .setCustomId('registerNo')
+                        .setLabel('No')
+                        .setStyle('DANGER')
+                );
+
+            let data = [
+                'The following information will be registered in the DB, please check that all the information is correct and then press yes, or no if you need to correct anything.',
+                `Name: ${interaction.options.getString('name')}, Dex Number: ${interaction.options.getInteger('dex_number')}`,
+                `DexEntry: ${interaction.options.getString('dex_entry')}`,
+                `Type 1: ${interaction.options.getString('type_1')}, Type 2: ${interaction.options.getString('type_2')}`,
+                `Height: ${interaction.options.getNumber('height')}, Weight: ${interaction.options.getNumber('weight')}`,
+                'Stats:',
+                `HP: ${interaction.options.getInteger('hp')}, ATK: ${interaction.options.getInteger('atk')}, DEF: ${interaction.options.getInteger('def')}, SpecialATK: ${interaction.options.getInteger('spatk')}, SpecialDEF: ${interaction.options.getInteger('spdef')}, Speed: ${interaction.options.getInteger('speed')}`
+            ]
+
+            await interaction.followUp({
+                content: data.join('\n'),
+                components: [row]
             });
 
-            await wait(4000).then(interaction.followUp(`${newPokemon.name} has been added to the DB, use the /upload command next to add the pokedoodle image.`));
 
+            const filter = i => (i.customId === 'registerYes' && i.user.id === interaction.user.id) || (i.customId === 'registerNo' && i.user.id === interaction.user.id);
+
+            const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, time: 60000 });
+
+            collector.on('collect', async i => {
+                if (i.customId === 'registerNo') {
+                    return await i.update({ content: `DB update aborted!`, components: [] });
+                } else if (i.customId === 'registerYes') {
+                    const newPokemon = await interaction.client.Tags.create({
+                        name: interaction.options.getString('name').toLowerCase(),
+                        dexNumber: interaction.options.getInteger('dex_number'),
+                        dexEntry: interaction.options.getString('dex_entry'),
+                        type1: interaction.options.getString('type_1'),
+                        type2: interaction.options.getString('type_2'),
+                        height: interaction.options.getNumber('height'),
+                        weight: interaction.options.getNumber('weight'),
+                        hp: interaction.options.getInteger('hp'),
+                        atk: interaction.options.getInteger('atk'),
+                        def: interaction.options.getInteger('def'),
+                        specialAtk: interaction.options.getInteger('spatk'),
+                        specialDef: interaction.options.getInteger('spdef'),
+                        speed: interaction.options.getInteger('speed')
+                    });
+
+                    return await i.update({ content: `The new Pokemon has been registered!`, components: [] })
+                }
+            })
+
+            collector.on('end', async collected => {
+                if (collected.size != 0) return;
+                return await interaction.followUp('No input recieved, input buttons are now disabled, if you would like to use this command please re-run the /register command!');
+            });
+            return;
 
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
