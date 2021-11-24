@@ -7,3 +7,7 @@ services:
         volumes:
             - /opt/pokedoodle:/usr/src/bot/database
           
+networks:
+    default:
+        external:
+            name: cloudbox
