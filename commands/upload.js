@@ -30,7 +30,7 @@ module.exports = {
                     if (!attachment) {
                         return message.reply('No upload detected please try again');
                     }
-                    const pokemon = await message.client.Tags.findOne({ where: { name: attachment.name.split('.')[0].toLowerCase() } }).then(db => {
+                    const pokemon = await message.client.Tags.findOne({ where: { name: attachment.name.split('.')[0].split('_').join(' ').toLowerCase() } }).then(db => {
                         if (db) return db.get('name');
                     });
                     if (pokemon) {
