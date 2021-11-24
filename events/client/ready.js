@@ -44,7 +44,7 @@ module.exports = (client) => {
 
             const statusArray = [
                 'Pokedoodle Bot!',
-                `Currently connected to: ${client.guilds.length} guilds`,
+                `Currently connected to: ${client.guilds.cache.lengthlength} guilds`,
                 'Type / to see all commands!',
                 '/invite to add this bot to your own server',
                 `Their is currently: ${dexNumber} pokemon recorded!`,
