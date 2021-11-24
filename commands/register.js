@@ -131,26 +131,80 @@ module.exports = {
             const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, time: 60000 });
 
             collector.on('collect', async i => {
-                if (i.customId === 'registerNo') {
-                    return await i.update({ content: `DB update aborted!`, components: [] });
-                } else if (i.customId === 'registerYes') {
-                    const newPokemon = await interaction.client.Tags.create({
-                        name: interaction.options.getString('name').toLowerCase(),
-                        dexNumber: interaction.options.getInteger('dex_number'),
-                        dexEntry: interaction.options.getString('dex_entry'),
-                        type1: interaction.options.getString('type_1'),
-                        type2: interaction.options.getString('type_2'),
-                        height: interaction.options.getNumber('height'),
-                        weight: interaction.options.getNumber('weight'),
-                        hp: interaction.options.getInteger('hp'),
-                        atk: interaction.options.getInteger('atk'),
-                        def: interaction.options.getInteger('def'),
-                        specialAtk: interaction.options.getInteger('spatk'),
-                        specialDef: interaction.options.getInteger('spdef'),
-                        speed: interaction.options.getInteger('speed')
-                    });
+                try {
+                    if (i.customId === 'registerNo') {
+                        return await i.update({ content: `DB update aborted!`, components: [] });
+                    } else if (i.customId === 'registerYes') {
+                        const newPokemon = await interaction.client.Tags.create({
+                            name: interaction.options.getString('name').toLowerCase(),
+                            dexNumber: interaction.options.getInteger('dex_number'),
+                            dexEntry: interaction.options.getString('dex_entry'),
+                            type1: interaction.options.getString('type_1'),
+                            type2: interaction.options.getString('type_2'),
+                            height: interaction.options.getNumber('height'),
+                            weight: interaction.options.getNumber('weight'),
+                            hp: interaction.options.getInteger('hp'),
+                            atk: interaction.options.getInteger('atk'),
+                            def: interaction.options.getInteger('def'),
+                            specialAtk: interaction.options.getInteger('spatk'),
+                            specialDef: interaction.options.getInteger('spdef'),
+                            speed: interaction.options.getInteger('speed')
+                        });
 
-                    return await i.update({ content: `The new Pokemon has been registered!`, components: [] })
+                        return await i.update({ content: `The new Pokemon has been registered!`, components: [] })
+                    }
+                } catch (error) {
+                    if (error.name === 'SequelizeUniqueConstraintError') {
+                        const row = new MessageActionRow()
+                            .addComponents(
+                                new MessageButton()
+                                    .setCustomId('registerYes')
+                                    .setLabel('Yes')
+                                    .setStyle('SUCCESS'),
+                                new MessageButton()
+                                    .setCustomId('registerNo')
+                                    .setLabel('No')
+                                    .setStyle('DANGER')
+                            );
+
+                        interaction.client.pokemonUpdate = {
+                            name: interaction.options.getString('name').toLowerCase(),
+                            dexNumber: interaction.options.getInteger('dex_number'),
+                            dexEntry: interaction.options.getString('dex_entry'),
+                            type1: interaction.options.getString('type_1'),
+                            type2: interaction.options.getString('type_2'),
+                            height: interaction.options.getNumber('height'),
+                            weight: interaction.options.getNumber('weight'),
+                            hp: interaction.options.getInteger('hp'),
+                            atk: interaction.options.getInteger('atk'),
+                            def: interaction.options.getInteger('def'),
+                            specialAtk: interaction.options.getInteger('spatk'),
+                            specialDef: interaction.options.getInteger('spdef'),
+                            speed: interaction.options.getInteger('speed')
+                        };
+
+                        await i.update({ content: `${interaction.options.getString('name')} already exists in the DB if you would like to modify the stats using the new information provided please click yes, otherwise click no`, components: [row] });
+
+                        const filter = i => (i.customId === 'registerYes' && i.user.id === interaction.user.id) || (i.customId === 'registerNo' && i.user.id === interaction.user.id);
+
+                        const collector = interaction.channel.createMessageComponentCollector({ filter, max: 1, time: 60000 });
+
+                        collector.on('collect', async i => {
+                            if (i.customId === 'registerNo') {
+                                return await i.update({ content: `DB update aborted!`, components: [] });
+                            } else if (i.customId === 'registerYes') {
+                                const pokemon = await i.client.Tags.findOne({ where: { name: i.client.pokemonUpdate.name } });
+                                pokemon.set(i.client.pokemonUpdate).save();
+                                return await i.update({ content: `The DB has been updated using the new data!`, components: [] })
+                            }
+                        })
+
+                        collector.on('end', async collected => {
+                            if (collected.size != 0) return;
+                            return await interaction.followUp('No input recieved, input buttons are now disabled, if you would like to use this command please re-run the /register command!');
+                        });
+                        return;
+                    }
                 }
             })
 
