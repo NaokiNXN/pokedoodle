@@ -17,13 +17,18 @@ module.exports = (client) => {
         let statusIndex = 0;
 
         client.globalInterval = setInterval(async () => {
-            const pokemon = await client.Tags.findOne({
+            const id = await client.Tags.findOne({
                 order: [['id', 'DESC']],
             }).then(data => {
-                return {
-                    id: data.get('id'),
-                    dexNumber: data.get('dexNumber')
-                }
+                return data.get('id');
+            }).catch(err => {
+                console.log(err);
+            });
+
+            const dexNumber = await client.Tags.findOne({
+                order: [['dexNumber', 'DESC']],
+            }).then(data => {
+                return data.get('dexNumber');
             }).catch(err => {
                 console.log(err);
             });
@@ -32,8 +37,8 @@ module.exports = (client) => {
                 'Pokedoodle Bot!',
                 'Type / to see all commands!',
                 '/invite to add this bot to your own server',
-                `Their is currently: ${pokemon.dexNumber} pokemon recorded!`,
-                `Their are currently: ${pokemon.id} different poke-forms recorded!`
+                `Their is currently: ${dexNumber} pokemon recorded!`,
+                `Their are currently: ${id} different poke-forms recorded!`
             ]
 
             await client.user.setPresence({
