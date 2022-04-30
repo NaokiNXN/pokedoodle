@@ -40,7 +40,7 @@ module.exports = {
                     return image.resize(225, 225);
                 }).catch(err => {
                     console.log(err);
-                    return interaction.followUp('An error has occured during dex generation doodle resize, please log this with the bot maker');
+                    return interaction.followUp(`An error has occured during doodle resize of pokemon ${pokemon.get('name')}, please log this with the bot maker`);
                 });
                 await dex.composite(doodle, 110, 130);
 
@@ -178,7 +178,9 @@ module.exports = {
             if (interaction.options.getString('name')) {
                 const pokemonName = interaction.options.getString('name').toLowerCase();
                 const pokemon = await interaction.client.Tags.findOne({ where: { name: pokemonName } });
-
+                
+                console.log(`Sending data for pokemon ${pokemonName}`);
+                
                 let data = [];
                 if (pokemon && !pokemon.get('doodle')) {
                     data.push(`name: ${pokemon.get('name')}`);

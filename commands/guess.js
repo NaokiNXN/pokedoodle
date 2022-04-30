@@ -28,11 +28,13 @@ module.exports = {
             const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
             const doodleBuffer = pokemon.get('doodle');
 
+            console.log(`Sending data for pokemon ${pokemon.get('name')}`);
+
             const doodle = await Jimp.read(doodleBuffer).then(async image => {
                 return await image.resize(420, 380);
             }).catch(err => {
                 console.log(err);
-                return interaction.followUp('An error occured when resizing the image please log with bot author');
+                return interaction.followUp(`An error has occured during doodle resize of pokemon ${pokemon.get('name')}, please log this with the bot maker`);
             });
 
             const guess = await Jimp.read('/usr/src/bot/commands/assets/wtp.png').then(async image => {

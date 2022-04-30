@@ -22,9 +22,12 @@ module.exports = {
     async execute(interaction) {
         try {
             await interaction.deferReply();
+
             const pokemon = await interaction.client.Tags.findOne({
                 order: Sequelize.literal('random()')
             });
+
+            console.log(`Sending data for pokemon ${pokemon.get('name')}`);
 
 
             async function dexGenerator(pokemon) {
@@ -33,7 +36,7 @@ module.exports = {
                     return image.resize(225, 225);
                 }).catch(err => {
                     console.log(err);
-                    return interaction.followUp('An error has occured during dex generation doodle resize, please log this with the bot maker');
+                    return interaction.followUp(`An error has occured during doodle resize of pokemon ${pokemon.get('name')}, please log this with the bot maker`);
                 });
                 await dex.composite(doodle, 110, 130);
 
@@ -171,7 +174,7 @@ module.exports = {
             return;
 
         } catch (error) {
-            await interaction.reply('An error occured, which shouldnt be possible please let the bot author know!');
+            await interaction.followUp('An error occured, which shouldnt be possible please let the bot author know!');
             return console.log(error);
         }
     },
