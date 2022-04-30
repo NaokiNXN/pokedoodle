@@ -108,7 +108,7 @@ module.exports = {
      */
     async execute(interaction) {
         console.log('Starting register command');
-        interaction.deferReply();
+        await interaction.deferReply();
 
         try {
             const row = new MessageActionRow()
@@ -148,26 +148,28 @@ module.exports = {
                     if (i.customId === 'registerNo') {
                         return await i.update({ content: `DB update aborted!`, components: [] });
                     } else if (i.customId === 'registerYes') {
+                        console.log('register confirmed now creating entry!');
                         const newPokemon = await interaction.client.Tags.create({
-                            name: interaction.options.getString('name').toLowerCase(),
-                            dexNumber: interaction.options.getInteger('dex_number'),
-                            dexEntry: interaction.options.getString('dex_entry'),
-                            type1: interaction.options.getString('type_1'),
-                            type2: interaction.options.getString('type_2'),
-                            height: interaction.options.getNumber('height'),
-                            weight: interaction.options.getNumber('weight'),
-                            hp: interaction.options.getInteger('hp'),
-                            atk: interaction.options.getInteger('atk'),
-                            def: interaction.options.getInteger('def'),
-                            specialAtk: interaction.options.getInteger('spatk'),
-                            specialDef: interaction.options.getInteger('spdef'),
-                            speed: interaction.options.getInteger('speed')
+                            name: await interaction.options.getString('name').toLowerCase(),
+                            dexNumber: await interaction.options.getInteger('dex_number'),
+                            dexEntry: await interaction.options.getString('dex_entry'),
+                            type1: await interaction.options.getString('type_1'),
+                            type2: await interaction.options.getString('type_2'),
+                            height: await interaction.options.getNumber('height'),
+                            weight: await interaction.options.getNumber('weight'),
+                            hp: await interaction.options.getInteger('hp'),
+                            atk: await interaction.options.getInteger('atk'),
+                            def: await interaction.options.getInteger('def'),
+                            specialAtk: await interaction.options.getInteger('spatk'),
+                            specialDef: await interaction.options.getInteger('spdef'),
+                            speed: await interaction.options.getInteger('speed')
                         });
-
+                        console.log('Register confirmed now responding to confirm!');
                         return await i.update({ content: `The new Pokemon has been registered!`, components: [] })
                     }
                 } catch (error) {
                     if (error.name === 'SequelizeUniqueConstraintError') {
+                        console.log('Sequelize error: entry already exists falling back to backup method!')
                         const row = new MessageActionRow()
                             .addComponents(
                                 new MessageButton()

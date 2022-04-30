@@ -31,7 +31,7 @@ module.exports = {
                 (interaction.options.getString('name') && interaction.options.getInteger('dex_number'))) {
                 return interaction.reply('Please supply either a name or dex number to search, do not give both!')
             }
-            interaction.deferReply();
+            await interaction.deferReply();
 
 
             async function dexGenerator(pokemon) {

@@ -17,7 +17,7 @@ module.exports = {
      */
     async execute(interaction) {
         try {
-            interaction.deferReply();
+            await interaction.deferReply();
             const pokemon = await interaction.client.Tags.findOne({
                 order: [['id', 'DESC']],
             });
