@@ -29,6 +29,9 @@ module.exports = {
             const filePath = './database/database.sqlite';
             if (interaction.options.getSubcommand() === 'backup') {
                 await interaction.reply({ content: 'This is the database backup.', files: [filePath], ephemeral: true });
+                if (!fs.existsSync(filePath+'.bk')) {
+                    await fs.copyFileSync(filePath, filePath+'.bk');
+                }
             } else if (interaction.options.getSubcommand() === 'restore') {
                 await interaction.reply({ content: 'Please upload the database backup!\n--Please note: when uploading the backup it will be available for everyone to view, as such please delete the message containing the upload following the confirmation message!', ephemeral: true });
 
