@@ -2,26 +2,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const wait = require('util').promisify(setTimeout);
 const { Interaction, MessageActionRow, MessageButton } = require('discord.js');
 
-const types = [
-    ['Normal', 'Normal'],
-    ['Fire', 'Fire'],
-    ['Water', 'Water'],
-    ['Grass', 'Grass'],
-    ['Electric', 'Electric'],
-    ['Ice', 'Ice'],
-    ['Fighting', 'Fighting'],
-    ['Poison', 'Poison'],
-    ['Ground', 'Ground'],
-    ['Flying', 'Flying'],
-    ['Psychic', 'Psychic'],
-    ['Bug', 'Bug'],
-    ['Rock', 'Rock'],
-    ['Ghost', 'Ghost'],
-    ['Dark', 'Dark'],
-    ['Dragon', 'Dragon'],
-    ['Steel', 'Steel'],
-    ['Fairy', 'Fairy']
-]
 
 /**
  * Register command takes the pokemon stats as an 
@@ -78,16 +58,49 @@ module.exports = {
                 .setDescription('The pokemons base speed stat')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('type_1')
-                .setDescription('The first type for this pokemon! please note type 1 is required additional types are optional.')
+            option.setName('category')
+                .setDescription('The gif category')
                 .setRequired(true)
-                .addChoices(types))
+                .addChoices({ name: 'Normal', value: 'Normal' },
+                    { name: 'Fire', value: 'Fire' },
+                    { name: 'Water', value: 'Water' },
+                    { name: 'Grass', value: 'Grass' },
+                    { name: 'Electric', value: 'Electric' },
+                    { name: 'Ice', value: 'Ice' },
+                    { name: 'Fighting', value: 'Fighting' },
+                    { name: 'Poison', value: 'Poison' },
+                    { name: 'Ground', value: 'Ground' },
+                    { name: 'Flying', value: 'Flying' },
+                    { name: 'Psychic', value: 'Psychic' },
+                    { name: 'Bug', value: 'Bug' },
+                    { name: 'Rock', value: 'Rock' },
+                    { name: 'Ghost', value: 'Ghost' },
+                    { name: 'Dark', value: 'Dark' },
+                    { name: 'Dragon', value: 'Dragon' },
+                    { name: 'Steel', value: 'Steel' },
+                    { name: 'Fairy', value: 'Fairy' }))
         .addStringOption(option =>
             option.setName('type_2')
                 .setDescription('The second applicable type for the pokemon, this is optional')
                 .setRequired(false)
-                .addChoices(types)),
-
+                .addChoices({ name: 'Normal', value: 'Normal' },
+                    { name: 'Fire', value: 'Fire' },
+                    { name: 'Water', value: 'Water' },
+                    { name: 'Grass', value: 'Grass' },
+                    { name: 'Electric', value: 'Electric' },
+                    { name: 'Ice', value: 'Ice' },
+                    { name: 'Fighting', value: 'Fighting' },
+                    { name: 'Poison', value: 'Poison' },
+                    { name: 'Ground', value: 'Ground' },
+                    { name: 'Flying', value: 'Flying' },
+                    { name: 'Psychic', value: 'Psychic' },
+                    { name: 'Bug', value: 'Bug' },
+                    { name: 'Rock', value: 'Rock' },
+                    { name: 'Ghost', value: 'Ghost' },
+                    { name: 'Dark', value: 'Dark' },
+                    { name: 'Dragon', value: 'Dragon' },
+                    { name: 'Steel', value: 'Steel' },
+                    { name: 'Fairy', value: 'Fairy' })),
 
     /**
      * 
