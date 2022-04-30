@@ -8,10 +8,6 @@
 
 module.exports = (client) => {
     try {
-        console.log('Syncing DB');
-
-        client.Tags.sync();
-
         console.log('Setting Status');
 
         let statusIndex = 0;

@@ -58,10 +58,11 @@ module.exports = {
                 .setDescription('The pokemons base speed stat')
                 .setRequired(true))
         .addStringOption(option =>
-            option.setName('category')
-                .setDescription('The gif category')
+            option.setName('type_1')
+                .setDescription('The first applicable type for the pokemon, non-optional')
                 .setRequired(true)
-                .addChoices({ name: 'Normal', value: 'Normal' },
+                .addChoices(
+                    { name: 'Normal', value: 'Normal' },
                     { name: 'Fire', value: 'Fire' },
                     { name: 'Water', value: 'Water' },
                     { name: 'Grass', value: 'Grass' },
@@ -78,12 +79,14 @@ module.exports = {
                     { name: 'Dark', value: 'Dark' },
                     { name: 'Dragon', value: 'Dragon' },
                     { name: 'Steel', value: 'Steel' },
-                    { name: 'Fairy', value: 'Fairy' }))
+                    { name: 'Fairy', value: 'Fairy' })
+        )
         .addStringOption(option =>
             option.setName('type_2')
                 .setDescription('The second applicable type for the pokemon, this is optional')
                 .setRequired(false)
-                .addChoices({ name: 'Normal', value: 'Normal' },
+                .addChoices(
+                    { name: 'Normal', value: 'Normal' },
                     { name: 'Fire', value: 'Fire' },
                     { name: 'Water', value: 'Water' },
                     { name: 'Grass', value: 'Grass' },
@@ -100,7 +103,8 @@ module.exports = {
                     { name: 'Dark', value: 'Dark' },
                     { name: 'Dragon', value: 'Dragon' },
                     { name: 'Steel', value: 'Steel' },
-                    { name: 'Fairy', value: 'Fairy' })),
+                    { name: 'Fairy', value: 'Fairy' })
+        ),
 
     /**
      * 
@@ -149,21 +153,26 @@ module.exports = {
                         return await i.update({ content: `DB update aborted!`, components: [] });
                     } else if (i.customId === 'registerYes') {
                         console.log('register confirmed now creating entry!');
-                        const newPokemon = await interaction.client.Tags.create({
-                            name: await interaction.options.getString('name').toLowerCase(),
-                            dexNumber: await interaction.options.getInteger('dex_number'),
-                            dexEntry: await interaction.options.getString('dex_entry'),
-                            type1: await interaction.options.getString('type_1'),
-                            type2: await interaction.options.getString('type_2'),
-                            height: await interaction.options.getNumber('height'),
-                            weight: await interaction.options.getNumber('weight'),
-                            hp: await interaction.options.getInteger('hp'),
-                            atk: await interaction.options.getInteger('atk'),
-                            def: await interaction.options.getInteger('def'),
-                            specialAtk: await interaction.options.getInteger('spatk'),
-                            specialDef: await interaction.options.getInteger('spdef'),
-                            speed: await interaction.options.getInteger('speed')
-                        });
+
+                        const newPokemon = {
+                            name: interaction.options.getString('name').toLowerCase(),
+                            dexNumber: interaction.options.getInteger('dex_number'),
+                            dexEntry: interaction.options.getString('dex_entry'),
+                            type1: interaction.options.getString('type_1'),
+                            type2: interaction.options.getString('type_2'),
+                            height: interaction.options.getNumber('height'),
+                            weight: interaction.options.getNumber('weight'),
+                            hp: interaction.options.getInteger('hp'),
+                            atk: interaction.options.getInteger('atk'),
+                            def: interaction.options.getInteger('def'),
+                            specialAtk: interaction.options.getInteger('spatk'),
+                            specialDef: interaction.options.getInteger('spdef'),
+                            speed: interaction.options.getInteger('speed')
+                        }
+
+                        console.log(newPokemon);
+
+                        await interaction.client.Tags.create(newPokemon);
                         console.log('Register confirmed now responding to confirm!');
                         return await i.update({ content: `The new Pokemon has been registered!`, components: [] })
                     }
@@ -220,6 +229,7 @@ module.exports = {
                         });
                         return;
                     }
+                    console.log(error);
                 }
             })
 

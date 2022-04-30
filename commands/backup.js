@@ -58,6 +58,8 @@ module.exports = {
                             .then(buffer => {
                                 return fs.writeFileSync(filePath, buffer);
                             });
+
+                        interaction.client.dbRefresh(interaction.client);
                         return message.reply('Upload complete, backup restored to DB!');
                     })
                     .catch(collected => {
@@ -68,6 +70,9 @@ module.exports = {
                 if(fs.existsSync(filePath+'.bk')) {
                     await fs.rmSync(filePath);
                     await fs.copyFileSync(filePath+'.bk', filePath);
+
+                    interaction.client.dbRefresh(interaction.client);
+
                     await interaction.reply({ content: 'DB restored from local backup!', ephemeral: true});
                 } else {
                     await interaction.reply({ content: 'Local backup doesnt exist now creating one!', ephemeral: true });

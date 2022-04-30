@@ -9,7 +9,7 @@ const clientId = '911403531305627678';
 /**
  * Change guildID to false in production build
  */
-const guildId = false;
+const guildId = '733775299510010049';
 
 
 
