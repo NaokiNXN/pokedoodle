@@ -31,6 +31,8 @@ client.cooldowns = new Set();
  * the data model to be used in the DB and both are attached to the client for easy access.
  */
 
+//test git setup
+
 client.dbRefresh = function (client) {
 
     if (client.sequelize) {
