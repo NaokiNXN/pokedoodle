@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, Message } = require('discord.js');
+const { Interaction } = require('discord.js');
 const Jimp = require('jimp');
 
 /**
