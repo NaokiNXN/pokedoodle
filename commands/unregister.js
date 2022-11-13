@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageActionRow, MessageButton } = require('discord.js');
+const { Interaction, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 
 
 /**
@@ -22,16 +22,16 @@ module.exports = {
                 order: [['id', 'DESC']],
             });
 
-            const row = new MessageActionRow()
+            const row = new ActionRowBuilder()
             .addComponents(
-                new MessageButton()
+                new ButtonBuilder()
                     .setCustomId('unregisterYes')
                     .setLabel('Yes')
-                    .setStyle('SUCCESS'),
-                new MessageButton()
+                    .setStyle(3),
+                new ButtonBuilder()
                     .setCustomId('unregisterNo')
                     .setLabel('No')
-                    .setStyle('DANGER')
+                    .setStyle(4)
             );
 
             let data = [
