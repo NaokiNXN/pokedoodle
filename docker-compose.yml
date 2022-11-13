@@ -2,7 +2,14 @@ version: '3'
 services:
     pokedoodle:
         image: pokedoodle:latest
-        restart: always
+        restart: unless-stopped
         container_name: pokedoodle
         volumes:
             - /opt/pokedoodle:/usr/src/bot/database
+        networks:
+            - saltbox
+
+
+networks:
+    saltbox:
+        external: true

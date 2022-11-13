@@ -5,11 +5,11 @@ const Sequelize = require('sequelize');
  * Intents and token setup and assignment
  */
 
-const botIntents = new Discord.Intents();
+const botIntents = new Discord.IntentsBitField();
 botIntents.add(
-    Discord.Intents.FLAGS.GUILDS,
-    Discord.Intents.FLAGS.GUILD_MESSAGES,
-    Discord.Intents.FLAGS.DIRECT_MESSAGES
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.DirectMessages
 );
 
 const client = new Discord.Client({ intents: botIntents });
@@ -30,8 +30,6 @@ client.cooldowns = new Set();
  * This section creates a DB using sequelize and sqlite, we also setup
  * the data model to be used in the DB and both are attached to the client for easy access.
  */
-
-//test git setup
 
 client.dbRefresh = function (client) {
 

@@ -76,7 +76,7 @@ module.exports = {
             });
 
         } catch (error) {
-            await interaction.reply('An error occured, which shouldnt be possible please let the bot author know!');
+            await interaction.channel.send('An error occured, which shouldnt be possible please let the bot author know!');
             return console.log(error);
         }
     },
