@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const wait = require('util').promisify(setTimeout);
-const { Interaction, MessageActionRow, MessageButton } = require('discord.js');
+const { Interaction, ActionRowBuilder, ButtonBuilder } = require('discord.js');
+const { stringify } = require('querystring');
 
 
 /**
@@ -115,16 +116,16 @@ module.exports = {
         await interaction.deferReply();
 
         try {
-            const row = new MessageActionRow()
+            const row = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setCustomId('registerYes')
                         .setLabel('Yes')
-                        .setStyle('SUCCESS'),
-                    new MessageButton()
+                        .setStyle(3),
+                    new ButtonBuilder()
                         .setCustomId('registerNo')
                         .setLabel('No')
-                        .setStyle('DANGER')
+                        .setStyle(4)
                 );
 
             let data = [
@@ -170,7 +171,7 @@ module.exports = {
                             speed: interaction.options.getInteger('speed')
                         }
 
-                        console.log(newPokemon);
+                        console.table(newPokemon);
 
                         await interaction.client.Tags.create(newPokemon);
                         console.log('Register confirmed now responding to confirm!');
@@ -179,16 +180,16 @@ module.exports = {
                 } catch (error) {
                     if (error.name === 'SequelizeUniqueConstraintError') {
                         console.log('Sequelize error: entry already exists falling back to backup method!')
-                        const row = new MessageActionRow()
+                        const row = new ActionRowBuilder()
                             .addComponents(
-                                new MessageButton()
+                                new ButtonBuilder()
                                     .setCustomId('registerYes')
                                     .setLabel('Yes')
-                                    .setStyle('SUCCESS'),
-                                new MessageButton()
+                                    .setStyle(3),
+                                new ButtonBuilder()
                                     .setCustomId('registerNo')
                                     .setLabel('No')
-                                    .setStyle('DANGER')
+                                    .setStyle(4)
                             );
 
                         interaction.client.pokemonUpdate = {
@@ -241,16 +242,16 @@ module.exports = {
 
         } catch (error) {
             if (error.name === 'SequelizeUniqueConstraintError') {
-                const row = new MessageActionRow()
+                const row = new ActionRowBuilder()
                     .addComponents(
-                        new MessageButton()
+                        new ButtonBuilder()
                             .setCustomId('registerYes')
                             .setLabel('Yes')
-                            .setStyle('SUCCESS'),
-                        new MessageButton()
+                            .setStyle(3),
+                        new ButtonBuilder()
                             .setCustomId('registerNo')
                             .setLabel('No')
-                            .setStyle('DANGER')
+                            .setStyle(4)
                     );
 
                 interaction.client.pokemonUpdate = {
