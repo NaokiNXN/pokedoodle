@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageActionRow, MessageButton } = require('discord.js');
+const { Interaction, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const Sequelize = require('sequelize');
 
 
@@ -19,15 +19,15 @@ module.exports = {
      */
     async execute(interaction) {
         try {
-            const row = new MessageActionRow()
+            const row = new ActionRowBuilder()
                 .addComponents(
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('Invite')
-                        .setStyle('LINK')
+                        .setStyle(5)
                         .setURL('https://discord.com/api/oauth2/authorize?client_id=911403531305627678&permissions=277025491968&scope=bot%20applications.commands'),
-                    new MessageButton()
+                    new ButtonBuilder()
                         .setLabel('Github')
-                        .setStyle('LINK')
+                        .setStyle(5)
                         .setURL('https://github.com/NaokiNXN/pokedoodle')
                 ); 
 
