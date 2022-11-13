@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageAttachment } = require('discord.js');
+const { Interaction, AttachmentBuilder } = require('discord.js');
 const Sequelize = require('sequelize');
 
 
@@ -24,7 +24,7 @@ module.exports = {
             });
 
             const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
-            const doodle = new MessageAttachment(pokemon.get('doodle'), `${name}.png`);
+            const doodle = new AttachmentBuilder(pokemon.get('doodle'), `${name}.png`);
             return await interaction.reply({ content: `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle], components: [] });
 
 
