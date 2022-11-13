@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageAttachment, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { Interaction, AttachmentBuilder, ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
 const Jimp = require('jimp');
 
 
@@ -199,7 +199,7 @@ module.exports = {
                 } else if (pokemon && pokemon.get('doodle')) {
                     const dex = await dexGenerator(pokemon);
                     await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
-                        const doodle = new MessageAttachment(buffer, `${pokemonName}.png`);
+                        const doodle = new AttachmentBuilder(buffer, `${pokemonName}.png`);
                         return interaction.followUp({ files: [doodle] });
                     }).catch(err => {
                         console.log(err);
@@ -223,9 +223,9 @@ module.exports = {
             });
 
             if (pokemon.length > 0 && pokemon.length != 1) {
-                const row = new MessageActionRow()
+                const row = new ActionRowBuilder()
                     .addComponents(
-                        new MessageSelectMenu()
+                        new SelectMenuBuilder()
                             .setCustomId('dexSearch')
                             .setPlaceholder('Choose a pokemon from the list to see its dex entry!')
                             .addOptions(pokemon));
@@ -240,7 +240,7 @@ module.exports = {
                     const pokemon = await i.client.Tags.findOne({ where: { name: i.values[0] } });
                     const dex = await dexGenerator(pokemon);
                     await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
-                        const doodle = new MessageAttachment(buffer, `${pokemon.get('name')}DEX.png`);
+                        const doodle = new AttachmentBuilder(buffer, `${pokemon.get('name')}DEX.png`);
                         return interaction.followUp({ files: [doodle] });
                     }).catch(err => {
                         console.log(err);
@@ -258,7 +258,7 @@ module.exports = {
                 const p = await interaction.client.Tags.findOne({ where: { name: pokemon[0].value } });
                 const dex = await dexGenerator(p);
                 await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
-                    const doodle = new MessageAttachment(buffer, `${p.get('name')}DEX.png`);
+                    const doodle = new AttachmentBuilder(buffer, `${p.get('name')}DEX.png`);
                     return interaction.followUp({ files: [doodle] });
                 }).catch(err => {
                     console.log(err);
