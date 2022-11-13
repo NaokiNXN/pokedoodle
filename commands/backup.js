@@ -31,9 +31,8 @@ module.exports = {
             const splitDir = './database/split/';
             const mergeDir = './database/merge/';
             if(interaction.options.getSubcommand() === 'backup') {
-                if(!fs.existsSync(filePath+'.bk')) {
-                    await fs.copyFileSync(filePath, filePath+'.bk');
-                }
+                
+                await fs.copyFileSync(filePath, filePath+'.bk');
                 if (!fs.existsSync(splitDir)){
                     fs.mkdirSync(splitDir);
                 }
