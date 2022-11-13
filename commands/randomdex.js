@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageAttachment } = require('discord.js');
+const { Interaction, AttachmentBuilder } = require('discord.js');
 const Sequelize = require('sequelize');
 const Jimp = require('jimp');
 
@@ -165,7 +165,7 @@ module.exports = {
 
             const dex = await dexGenerator(pokemon);
             await dex.getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
-                const doodle = new MessageAttachment(buffer, `${pokemon.get('name')}DEX.png`);
+                const doodle = new AttachmentBuilder(buffer, `${pokemon.get('name')}DEX.png`);
                 return interaction.followUp({ files: [doodle] });
             }).catch(err => {
                 console.log(err);
