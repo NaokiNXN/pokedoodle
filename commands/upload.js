@@ -39,7 +39,9 @@ module.exports = {
                                 const update = await message.client.Tags.update({ doodle: buffer }, { where: { name: pokemon } });
                                 
                                 if (update > 0) {
-                                    return message.reply(`${pokemon} pokedoodle has been uploaded!`);
+                                    const filePath = './database/database.sqlite';
+                                    await fs.copyFileSync(filePath, filePath+'.bk');
+                                    return message.reply(`${pokemon} pokedoodle has been uploaded!\nDont forget to make regular backups using the backup command!!`);
                                 }
 
                                 return message.reply(`Their was an error loading the image buffer into the DB please log this error with the bot author`);
