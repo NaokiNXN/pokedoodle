@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageAttachment, MessageActionRow, MessageSelectMenu } = require('discord.js');
+const { Interaction, AttachmentBuilder, ActionRowBuilder, SelectMenuBuilder } = require('discord.js');
 
 
 
@@ -53,7 +53,7 @@ module.exports = {
                     data.push(`speed: ${pokemon.get('speed')}`);
                     return interaction.followUp(data.join('\n'));
                 } else if (pokemon && pokemon.get('doodle')) {
-                    const doodle = new MessageAttachment(pokemon.get('doodle'), `${pokemonName}.png`);
+                    const doodle = new AttachmentBuilder(pokemon.get('doodle'), `${pokemonName}.png`);
                     const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
                     return interaction.followUp({ content: `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle] });
                 }
@@ -73,9 +73,9 @@ module.exports = {
             });
 
             if (pokemon.length > 0 && pokemon.length != 1) {
-                const row = new MessageActionRow()
+                const row = new ActionRowBuilder()
                     .addComponents(
-                        new MessageSelectMenu()
+                        new SelectMenuBuilder()
                             .setCustomId('dexSearch')
                             .setPlaceholder('Choose a pokemon from the list to see its doodle!')
                             .addOptions(pokemon));
@@ -89,7 +89,7 @@ module.exports = {
                 collector.on('collect', async i => {
                     const pokemon = await i.client.Tags.findOne({ where: { name: i.values[0] } });
                     const name = pokemon.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
-                    const doodle = new MessageAttachment(pokemon.get('doodle'), `${name}.png`);
+                    const doodle = new AttachmentBuilder(pokemon.get('doodle'), `${name}.png`);
                     return await i.update({ content: `#${pokemon.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle], components: [] });
                 });
 
@@ -101,7 +101,7 @@ module.exports = {
             } else if (pokemon.length === 1) {
                 const p = await interaction.client.Tags.findOne({ where: { name: pokemon[0].value } });
                 const name = p.get('name').split(' ').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
-                const doodle = new MessageAttachment(p.get('doodle'), `${name}.png`);
+                const doodle = new AttachmentBuilder(p.get('doodle'), `${name}.png`);
                 return await interaction.followUp({ content: `#${p.get('dexNumber').toString().padStart(3, '0')} - ${name}`, files: [doodle], components: [] });
             }
             return interaction.followUp('No pokemon found in the DB');
