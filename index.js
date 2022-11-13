@@ -9,7 +9,8 @@ const botIntents = new Discord.IntentsBitField();
 botIntents.add(
     Discord.GatewayIntentBits.Guilds,
     Discord.GatewayIntentBits.GuildMessages,
-    Discord.GatewayIntentBits.DirectMessages
+    Discord.GatewayIntentBits.DirectMessages,
+    Discord.GatewayIntentBits.MessageContent
 );
 
 const client = new Discord.Client({ intents: botIntents });

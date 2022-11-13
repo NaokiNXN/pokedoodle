@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { Interaction, MessageAttachment } = require('discord.js');
+const { Interaction, AttachmentBuilder } = require('discord.js');
 const Sequelize = require('sequelize');
 const Jimp = require('jimp');
 
@@ -47,14 +47,14 @@ module.exports = {
             });
 
             await guess[0].getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
-                const finalImg = new MessageAttachment(buffer, `${name}.png`);
+                const finalImg = new AttachmentBuilder(buffer, `${name}.png`);
                 return await interaction.followUp({ content: `Starting from now you have 2 minutes to guess this pokemon!`, files: [finalImg] });
             }).catch(err => {
                 console.log(err);
                 return interaction.followUp('An error occured when sending the final image, please log with the bot author');
             });
 
-            const filter = m => m.content.toLowerCase().includes(name.toLowerCase().split(' ').pop());
+            filter = m => m.content.toLowerCase().includes(name.toLowerCase().split(' ').pop());
 
             const collector = interaction.channel.createMessageCollector({ filter, max: 1, time: 120000 });
 
@@ -64,7 +64,8 @@ module.exports = {
 
             collector.on('end', async collected => {
                 await guess[1].getBufferAsync(Jimp.MIME_PNG).then(async buffer => {
-                    const finalImg = new MessageAttachment(buffer, `${name}.png`);
+
+                    const finalImg = new AttachmentBuilder(buffer, `${name}.png`);
                     return await interaction.channel.send({ files: [finalImg] });
                 }).catch(err => {
                     console.log(err);
